@@ -49,29 +49,40 @@ body {
     position: relative;
 }
 
-/* BOTÓN CONFIGURACIÓN */
+/* BOTÓN CONFIGURACIÓN (TUERCA MINIMALISTA) */
 #config-toggle {
     position: absolute;
     top: 25px;
     right: 25px;
+    width: 38px;
+    height: 38px;
     background: rgba(15, 15, 15, 0.9);
     border: 1px solid var(--cyan);
     color: var(--cyan);
-    font-family: 'UnifrakturMaguntia', serif;
-    font-size: 0.85rem;
-    padding: 5px 12px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     z-index: 10;
-    letter-spacing: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#config-toggle svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.4s ease;
 }
 
 #config-toggle:hover {
     box-shadow: 0 0 15px var(--cyan);
     background: var(--cyan);
     color: #000;
+}
+
+#config-toggle:hover svg {
+    transform: rotate(45deg);
 }
 
 /* TARJETA PRINCIPAL */
@@ -264,6 +275,8 @@ body {
 /* GESTOS DINÁMICOS */
 body.holding-change #radio-card { border-color: #00ff80 !important; box-shadow: 0 0 18px #00ff80 !important; }
 body.holding-off #radio-card { border-color: #ff0055 !important; box-shadow: 0 0 18px #ff0055 !important; }
+
+body.holding-change #station-logo { transform: scale(1.05); }
 
 /* FLASH */
 .flash { animation: flashGlow .25s ease; }
