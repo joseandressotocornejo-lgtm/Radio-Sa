@@ -49,27 +49,29 @@ body {
     position: relative;
 }
 
-/* BOTÓN CONFIGURACIÓN INTEGRADO A LA ESTÉTICA */
+/* BOTÓN DE CONFIGURACIÓN INDUSTRIAL CYBERPUNK CHICO */
 #config-toggle {
     position: absolute;
     top: 25px;
     right: 25px;
-    background: var(--bg-card);
+    background: rgba(15, 15, 15, 0.9);
     border: 1px solid var(--cyan);
     color: var(--cyan);
     font-family: 'UnifrakturMaguntia', serif;
-    font-size: 0.95rem;
-    padding: 6px 12px;
-    border-radius: 8px;
+    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 4px;
     cursor: pointer;
     z-index: 10;
+    letter-spacing: 1px;
     box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
     transition: all 0.2s ease;
 }
 
 #config-toggle:hover {
-    box-shadow: 0 0 14px var(--cyan);
-    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--cyan);
+    background: var(--cyan);
+    color: #000;
 }
 
 /* TARJETA PRINCIPAL */
@@ -113,9 +115,9 @@ body {
     transition: transform .2s ease, filter .2s ease;
 }
 
-/* ANIMACIÓN DISCO (CON ORIGEN ARREGLADO) */
+/* ANIMACIÓN ROTACIÓN DISCO */
 .rotating {
-    animation: rotateDisk 5s linear infinite;
+    animation: rotateDisk 6s linear infinite;
 }
 
 @keyframes rotateDisk {
@@ -123,7 +125,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* NOMBRE */
+/* NOMBRE DE ESTACIÓN */
 #station-name {
     color: var(--text);
     text-align: center;
@@ -233,7 +235,7 @@ body {
     text-transform: none;
 }
 
-/* SECCIÓN CRÉDITOS */
+/* SECCIÓN CRÉDITOS EN EL PANEL */
 #credits-section h3 {
     font-family: 'UnifrakturMaguntia', serif;
     font-size: 1.1rem;
