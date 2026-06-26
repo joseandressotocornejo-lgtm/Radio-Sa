@@ -35,13 +35,11 @@ let startX = 0;
 let startY = 0;
 let actionTriggered = false; 
 
-// Elementos del DOM original
 const audio = document.getElementById("radio-audio");
 const menuSfx = document.getElementById("menu-sfx");
 const stationLogo = document.getElementById("station-logo");
 const stationName = document.getElementById("station-name");
 
-// Elementos del DOM de Configuración
 const configToggle = document.getElementById("config-toggle");
 const configPanel = document.getElementById("config-panel");
 const volumeControl = document.getElementById("volume-control");
@@ -50,14 +48,12 @@ const rhythmControl = document.getElementById("rhythm-control");
 const rotationControl = document.getElementById("rotation-control");
 const radioCard = document.getElementById("radio-card");
 
-// Variables para Analizador de Audio (Ritmo de música)
 let audioCtx = null;
 let analyser = null;
 let source = null;
 let dataArray = null;
 let rhythmEnabled = false;
 
-// Mapeo de colores neón variables CSS
 const colors = {
     cyan: "#00ffff",
     magenta: "#ff00ff",
@@ -81,7 +77,6 @@ function updateUI() {
         stationLogo.classList.add("flash");
     });
 
-    // Control del estado de rotación visual
     manageRotationState();
 }
 
@@ -105,10 +100,13 @@ function applyStation() {
         try {
             audio.currentTime = now % station.duration;
         } catch (err) {}
+        
         audio.play().then(() => {
             manageRotationState();
-            setupAudioAnalysis();
-        }).catch(() => {});
+            if (rhythmEnabled) setupAudioAnalysis();
+        }).catch((e) => {
+            console.log("Error de reproducción manejado:", e);
+        });
     };
 
     audio.load();
@@ -152,13 +150,12 @@ function checkEnterFolder() {
     return false;
 }
 
-// LÓGICA DE EVENTOS DE CONFIGURACIÓN
+// CONTROL DEL PANEL DE CONFIGURACIÓN
 configToggle.addEventListener("click", (e) => {
     e.stopPropagation();
     configPanel.classList.toggle("hidden");
 });
 
-// Cerrar panel de configuración al hacer clic fuera del contenido
 configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) {
         configPanel.classList.add("hidden");
@@ -197,19 +194,23 @@ function manageRotationState() {
     }
 }
 
-// Configuración de la API Web Audio para capturar el ritmo
+// Inicialización segura del nodo analizador
 function setupAudioAnalysis() {
     if (!rhythmEnabled || audio.paused || !audio.src) return;
 
     if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        source = audioCtx.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        analyser.fftSize = 64;
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            analyser.fftSize = 64;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+        } catch (err) {
+            console.warn("Análisis de audio restringido por políticas CORS.");
+            return;
+        }
     }
     
     if (audioCtx.state === 'suspended') {
@@ -226,21 +227,18 @@ function analyzeMusic() {
     }
 
     requestAnimationFrame(analyzeMusic);
-    analyser.getByteFrequencyData(dataArray);
-
-    // Tomamos las frecuencias bajas (graves)
-    let lowFreqSum = 0;
-    for (let i = 0; i < 8; i++) {
-        lowFreqSum += dataArray[i];
+    if (analyser && dataArray) {
+        analyser.getByteFrequencyData(dataArray);
+        let lowFreqSum = 0;
+        for (let i = 0; i < 8; i++) {
+            lowFreqSum += dataArray[i];
+        }
+        let average = lowFreqSum / 8;
+        let scale = 1 + (average / 255) * 0.06; 
+        radioCard.style.transform = `scale(${scale})`;
     }
-    let average = lowFreqSum / 8;
-    
-    // Mapeo del volumen físico a escala CSS
-    let scale = 1 + (average / 255) * 0.08; 
-    radioCard.style.transform = `scale(${scale})`;
 }
 
-// GESTIÓN DE EVENTOS DE DESLIZAMIENTO
 function pointerDown(event) {
     if (event.target.closest('#config-panel') || event.target.closest('#config-toggle')) return;
     const touch = event.touches ? event.touches[0] : event;
